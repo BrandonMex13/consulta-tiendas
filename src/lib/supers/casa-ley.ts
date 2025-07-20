@@ -1,15 +1,23 @@
-import { ProductosCasaLeyTypes } from '@/types/productosCasaLey';
-import { getApiClient } from '../apiClient'
-import { loadGetInitialProps } from 'next/dist/shared/lib/utils';
-
-const CasaLey = getApiClient('CasaLey')
+const CASA_LEY_BASE_URL = process.env.NEXT_PUBLIC_URL_LEY || 'https://serviciosapp.casaley.com.mx'
 
 const body = {
-  "name": "prueba",
   "register_no": "1086"
 }
 
-export async function buscarCasaLeyPorNombre() {
-  const res = await CasaLey.post(`/rails/api/search_products_web`, body);
-  return res.data;
+export async function buscarCasaLeyPorNombre(searchTerm: string = "", page: number = 1) {
+  const bodyWithSearch = {
+    ...body,
+    "name": searchTerm,
+    "page": page
+  }
+  
+  const res = await fetch(`${CASA_LEY_BASE_URL}/rails/api/search_products_web`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bodyWithSearch),
+  });
+  
+  return res.json();
 }
